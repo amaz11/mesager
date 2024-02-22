@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as jwt from "jsonwebtoken";
-import { JWT_SECRET_KEY } from "secret";
+import { JWT_SECRET_KEY } from "../secret";
 import prisma from "../db/db";
 // headers.authorization.split(" ")[1]
 export const protectedRoute = async (req: Request, res: Response, next: NextFunction) => {

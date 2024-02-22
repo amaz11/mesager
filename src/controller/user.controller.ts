@@ -11,7 +11,8 @@ const getUsers = async (req: Request, res: Response) => {
             id: true,
             email: true,
             name: true,
-        }
+        },
+
     }
     )
     res.status(200).json({ ok: true, message: "success", data })

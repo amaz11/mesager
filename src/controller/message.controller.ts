@@ -13,17 +13,22 @@ const sendMessage = async (req: Request, res: Response) => {
             ]
         },
     })
-
-    const data = await prisma.conversation.upsert({
-        where: {
-            id: conversation!.id,
-        },
-        create: {
-            participant: {
-                connect: [{ id: senderId }, { id: receiverId }]
+    if (!conversation) {
+        conversation = await prisma.conversation.create({
+            data: {
+                participant: {
+                    connect: [{ id: senderId }, { id: receiverId }]
+                }
             }
+
+
+        })
+    }
+    const data = await prisma.conversation.update({
+        where: {
+            id: conversation?.id,
         },
-        update: {
+        data: {
             message: {
                 create: {
                     message,
@@ -40,4 +45,31 @@ const sendMessage = async (req: Request, res: Response) => {
     res.status(201).json({ ok: true, message: "success", data });
 }
 
-export { sendMessage }
+const getMessage = async (req: Request, res: Response) => {
+    const { id: receiverId } = req.params
+    const senderId = (req as any).user.id
+    const conversation = await prisma.conversation.findFirst({
+        where: {
+            AND: [
+                { participant: { some: { id: receiverId } } },
+                { participant: { some: { id: senderId } } }
+            ]
+        },
+        include: {
+            message: {
+                include: {
+                    receiver: true,
+                    sender: true
+                }
+            }
+        }
+    })
+
+    res.status(200).json({
+        ok: true,
+        messsage: "success",
+        data: conversation
+    })
+}
+
+export { sendMessage, getMessage }

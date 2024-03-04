@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import prisma from "../db/db";
 import { getRecevierSokectId, io } from "../index";
+
 const sendMessage = async (req: Request, res: Response) => {
     const { message } = req.body
     const { id: receiverId } = req.params

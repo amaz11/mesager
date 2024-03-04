@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../db/db";
-import { getRecevierSokectId, io } from "../index";
+import { getSokectId, io } from "../index";
 
 const sendMessage = async (req: Request, res: Response) => {
     const { message } = req.body
@@ -41,17 +41,23 @@ const sendMessage = async (req: Request, res: Response) => {
         },
         include: {
             message: {
+                include: {
+                    receiver: true,
+                    sender: true
+                },
                 orderBy: {
                     createAt: 'desc'
-                }
+                },
             }
         }
     })
     const newMessage = messageUpdate?.message[0]
-    const recevierSokectId: string = getRecevierSokectId(receiverId)
+    const recevierSokectId: string = getSokectId(receiverId)
+    const senderSokectId: string = getSokectId(senderId)
     if (recevierSokectId !== null || recevierSokectId) {
         io.to(recevierSokectId).emit('newMessage', newMessage)
     }
+    io.to(senderSokectId).emit('myMessage', newMessage)
     res.status(201).json({ ok: true, message: "success", });
 }
 

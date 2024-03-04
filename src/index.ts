@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
     })
 })
 
-export const getRecevierSokectId = (recevierId: string) => {
+export const getSokectId = (recevierId: string) => {
     return userSocketMap[`${recevierId}`]
 }
 

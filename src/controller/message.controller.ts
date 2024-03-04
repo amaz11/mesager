@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../db/db";
+import { getRecevierSokectId, io } from "../index";
 const sendMessage = async (req: Request, res: Response) => {
     const { message } = req.body
     const { id: receiverId } = req.params
@@ -24,7 +25,7 @@ const sendMessage = async (req: Request, res: Response) => {
 
         })
     }
-    const data = await prisma.conversation.update({
+    const messageUpdate = await prisma.conversation.update({
         where: {
             id: conversation?.id,
         },
@@ -38,11 +39,19 @@ const sendMessage = async (req: Request, res: Response) => {
             }
         },
         include: {
-            message: true
+            message: {
+                orderBy: {
+                    createAt: 'desc'
+                }
+            }
         }
     })
-
-    res.status(201).json({ ok: true, message: "success", data });
+    const newMessage = messageUpdate?.message[0]
+    const recevierSokectId: string = getRecevierSokectId(receiverId)
+    if (recevierSokectId !== null || recevierSokectId) {
+        io.to(recevierSokectId).emit('newMessage', newMessage)
+    }
+    res.status(201).json({ ok: true, message: "success", });
 }
 
 const getMessage = async (req: Request, res: Response) => {
@@ -60,9 +69,13 @@ const getMessage = async (req: Request, res: Response) => {
                 include: {
                     receiver: true,
                     sender: true
+                },
+                orderBy: {
+                    createAt: 'desc'
                 }
-            }
-        }
+            },
+        },
+
     })
 
     res.status(200).json({

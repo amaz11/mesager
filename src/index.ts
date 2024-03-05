@@ -47,6 +47,9 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 app.use(cookieParser())
 
+app.get('/', (req, res) => {
+    res.send(200).json('Welcome');
+})
 
 app.use('/api/v1', routers)
 

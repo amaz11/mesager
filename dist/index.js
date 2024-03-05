@@ -45,6 +45,9 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cors_1.default)());
 app.use((0, cookie_parser_1.default)());
+app.get('/', (req, res) => {
+    res.send(200).json('Welcome');
+});
 app.use('/api/v1', routes_1.routers);
 server.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);

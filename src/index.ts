@@ -1,4 +1,4 @@
-import express, { Express } from "express";
+import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import { routers } from "./routes";
 import cookieParser from "cookie-parser";
@@ -47,8 +47,8 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 app.use(cookieParser())
 
-app.get('/', (req, res) => {
-    res.send(200).json('Welcome');
+app.get('/', (req: Request, res: Response) => {
+    res.status(200).json('Welcome');
 })
 
 app.use('/api/v1', routers)
